@@ -20,5 +20,5 @@ app.listen(PORT, async () => {
     .catch((err) => {
       console.log("Database connection failed");
     });
-  console.log(`server started on http://localhost:${PORT}`);
+  console.log(`server started on ${PORT}`);
 });
