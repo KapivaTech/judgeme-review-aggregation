@@ -1,17 +1,20 @@
 const dotenv = require("dotenv");
-const { fetchReviewsJudgeMe } = require("../helpers/fetchReviewsJudgeMe");
+const { fetchReviewsJudgeMe } = require("../helpers/fetchReviewsJudgeMeV2");
 dotenv.config();
 const { fetchProductsBGC } = require("../helpers/fetchBigcommerce.products");
 const { ReviewsModel } = require("../models/reviews.model");
 
 const postReviews = async () => {
   let productsData = [];
+  let cachedProducts = [];
+  let failedProducts = [];
   const delayInMS = (ms) =>
     new Promise((resolve, reject) => setTimeout(() => resolve(), ms));
   const batchSize = 2;
   let curReq = 0;
-  let totalPages = 2;
+  let totalPages = 1;
   let products = await fetchProductsBGC(1, productsData, totalPages);
+  console.log(products.length);
   while (curReq < products.length) {
     const end =
       products.length < curReq + batchSize
@@ -26,19 +29,19 @@ const postReviews = async () => {
           products[index]["sku"]
         )
       );
-      console.log(`sending request ${curReq}...`);
+      // console.log(`sending request ${curReq}...`);
       curReq++;
     }
     await Promise.all(concurrentReq);
     console.log(`requests ${curReq - batchSize}-${curReq} done.`);
     if (curReq + 1 < products.length) {
-      console.log(
-        `[${new Date().toLocaleString()}] Waiting for five seconds before sending next requests...`
-      );
+      // console.log(
+      //   `[${new Date().toLocaleString()}] Waiting for five seconds before sending next requests...`
+      // );
       await delayInMS(5000);
-      console.log(
-        `[${new Date().toLocaleString()}] At least five second has gone.`
-      );
+      // console.log(
+      //   `[${new Date().toLocaleString()}] At least five second has gone.`
+      // );
     }
   }
 };

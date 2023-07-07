@@ -16,26 +16,27 @@ const fetchReviewsJudgeMe = async (
   try {
     axios
       .get(
-        `https://judge.me/api/v1/widgets/product_review?api_token=${process.env.api_token}&shop_domain=${process.env.shop_domain}&external_id=${product_id}`
+        `https://cache.judge.me/widgets/bigcommerce/${process.env.shop_domain}?public_token=${process.env.public_token}&review_widget_product_ids=${product_id}`
       )
       .then(async (response) => {
-        const longText = response.data.widget.split(" ");
+        const longText = response.data.review_widgets[product_id].split(" ");
         const rating = longText[3].split("=")[1].split("'")[1];
         const totalReviews = longText[4].split("=")[1].split("'")[1];
+        console.log(rating, totalReviews);
         const checkIfExisting = await ReviewsModel.findOne({
           product_id: product_id,
         });
         if (checkIfExisting) {
           try {
-            const updateProductReview = await ReviewsModel.updateOne(
-              { product_id: product_id },
-              {
-                $set: {
-                  product_rating: rating,
-                  product_total_reviews: totalReviews,
-                },
-              }
-            );
+            // const updateProductReview = await ReviewsModel.updateOne(
+            //   { product_id: product_id },
+            //   {
+            //     $set: {
+            //       product_rating: rating,
+            //       product_total_reviews: totalReviews,
+            //     },
+            //   }
+            // );
             console.log("success", product_id, product_SKU);
             // logger_reviews_update.write(
             //   `\n Product ID :${product_id} updated successfully`
@@ -49,18 +50,18 @@ const fetchReviewsJudgeMe = async (
           }
         } else {
           try {
-            const newProdcutReview = await ReviewsModel.create({
-              product_id: product_id,
-              product_SKU: product_SKU,
-              product_rating: rating,
-              product_total_reviews: totalReviews,
-            });
-            if (newProdcutReview) {
-              console.log("success", product_id, product_SKU);
-              //   logger_reviews.write(
-              //     `\n Product ID :${product_id} created successfully`
-              //   );
-            }
+            // const newProdcutReview = await ReviewsModel.create({
+            //   product_id: product_id,
+            //   product_SKU: product_SKU,
+            //   product_rating: rating,
+            //   product_total_reviews: totalReviews,
+            // });
+            // if (newProdcutReview) {
+            console.log("success", product_id, product_SKU);
+            //   logger_reviews.write(
+            //     `\n Product ID :${product_id} created successfully`
+            //   );
+            // }
           } catch (e) {
             console.error(
               e.message,

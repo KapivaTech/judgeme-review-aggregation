@@ -5,6 +5,7 @@ const kp_x_auth_token = process.env.kp_x_auth_token;
 const store_hash = process.env.store_hash;
 
 const fetchProductsBGC = async (currPage, productsData, totalPages) => {
+  // console.log("tdtr");
   if (currPage > totalPages) {
     return;
   } else {
@@ -18,8 +19,9 @@ const fetchProductsBGC = async (currPage, productsData, totalPages) => {
         }
       )
       .then(async (res) => {
+        // console.log(res.data.meta.pagination, "response");
         const data = res.data.data;
-        totalPages = res.data.meta.pagination.totalPages;
+        totalPages = res.data.meta.pagination.total_pages;
         productsData.push(...data);
         return await fetchProductsBGC(currPage + 1, productsData, totalPages);
       })
